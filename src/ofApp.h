@@ -20,5 +20,23 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+    
+        // use these functions to start each new video
+        // we don't access the array of videos directly
+        void playVideo(int n);
+        void updateVideo();
+        void drawVideo();
+    
+        // fixed ratio that we compare against to resize & scale the video
+        const float hdVideoRatio = 1.777;
+    
+        // do we scale the video to the max size and fill the screen
+        bool videoMaxScale = false;
+    
+        // array of all the video files
+        ofVideoPlayer videos[2];
+    
+        // Pointer to ofVideoPlayer
+        ofVideoPlayer *videoPointer;
+    
 };
