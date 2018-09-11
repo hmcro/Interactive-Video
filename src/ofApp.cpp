@@ -61,8 +61,13 @@ void ofApp::playVideo(int n){
         videoPointer->stop();
     }
     
+    // switch to the new video using a pointer
     videoPointer = &videos[n];
+    
+    // set to starting frame
     videoPointer->setPosition(0);
+    
+    // start playing from the beginning
     videoPointer->play();
     
 }
