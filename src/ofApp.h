@@ -34,7 +34,7 @@ class ofApp : public ofBaseApp{
         bool videoMaxScale = false;
     
         // array of all the video files
-        ofVideoPlayer videos[2];
+        ofVideoPlayer videos[14];
     
         // Pointer to ofVideoPlayer
         ofVideoPlayer *videoPointer;

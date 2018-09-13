@@ -10,7 +10,19 @@ void ofApp::setup(){
 
     // load all video urls into array
     videos[0].load("Attractor.mp4");
-    videos[1].load("Welcome1.mp4");
+    videos[1].load("End1.mp4");
+    videos[2].load("Meeting1.mp4");
+    videos[3].load("Questions1.mp4");
+    videos[4].load("Questions2.mp4");
+    videos[5].load("Questions3.mp4");
+    videos[6].load("Questions4.mp4");
+    videos[7].load("Reflection1.mp4");
+    videos[8].load("Reflection2.mp4");
+    videos[9].load("Tour1.mp4");
+    videos[10].load("Tour2.mp4");
+    videos[11].load("Tour3.mp4");
+    videos[12].load("Welcome1.mp4");
+    videos[13].load("Welcome2.mp4");
     
     // tell the attractor to play on loop
     videos[0].setLoopState(OF_LOOP_NORMAL);
