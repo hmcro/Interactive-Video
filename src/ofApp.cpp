@@ -10,25 +10,29 @@ void ofApp::setup(){
 
     // load all video urls into array
     videos[0].load("Attractor.mp4");
-    videos[1].load("End1.mp4");
-    videos[2].load("Meeting1.mp4");
-    videos[3].load("Questions1.mp4");
-    videos[4].load("Questions2.mp4");
-    videos[5].load("Questions3.mp4");
-    videos[6].load("Questions4.mp4");
-    videos[7].load("Reflection1.mp4");
-    videos[8].load("Reflection2.mp4");
-    videos[9].load("Tour1.mp4");
-    videos[10].load("Tour2.mp4");
-    videos[11].load("Tour3.mp4");
-    videos[12].load("Welcome1.mp4");
-    videos[13].load("Welcome2.mp4");
+    videos[1].load("Welcome1.mp4");
+    videos[2].load("Welcome2.mp4");
+    videos[3].load("Tour1.mp4");
+    videos[4].load("Tour2.mp4");
+    videos[5].load("Tour3.mp4");
+    videos[6].load("Questions1.mp4");
+    videos[7].load("Questions2.mp4");
+    videos[8].load("Questions3.mp4");
+    videos[9].load("Questions4.mp4");
+    videos[10].load("Meeting1.mp4");
+    videos[11].load("Reflection1.mp4");
+    videos[12].load("Reflection2.mp4");
+    videos[13].load("End1.mp4");
     
-    // tell the attractor to play on loop
+    cout << "tell all the videos to only play once" << endl;
+    
+    // tell all the videos to only play once
+    for(int i = 0; i < VIDEOS_LENGTH; i++) {
+        videos[i].setLoopState(OF_LOOP_NONE);
+    }
+    
+    // BUT tell the attractor to play on looping
     videos[0].setLoopState(OF_LOOP_NORMAL);
-    
-    // tell the normla video to play once
-    videos[1].setLoopState(OF_LOOP_NONE);
     
     // start playing the attractor video immediately
     playVideo(0);
@@ -49,9 +53,9 @@ void ofApp::draw(){
     
     drawVideo();
     
-    string str = "ATTRACTOR TOGGLE";
+    string str = "VIDEO SEQUENCER";
     str += "\n\nA = attractor video";
-    str += "\nB = welcome video";
+    str += "\nG = Generate sequence";
     str += "\nF = fullscreen";
     str += "\nS = scale mode";
     if (videoMaxScale) {
@@ -59,6 +63,22 @@ void ofApp::draw(){
     }
     else {
         str += " (with borders)";
+    }
+    
+    str += "\n\nSequence: ";
+    
+    // output the seuqnce order and highlight the new video position
+    for(int i = 0; i < SEQUENCE_LENGTH; i++) {
+        if (i == nPlaying) {
+            str += "[";
+        }
+        str += ofToString(sequence[i]);
+        if (i == nPlaying) {
+            str += "]";
+        }
+        if (i < SEQUENCE_LENGTH-1) {
+            str += ",";
+        }
     }
     
     ofDrawBitmapString(str, 50, 50);
@@ -91,9 +111,22 @@ void ofApp::updateVideo(){
     // the attractor doesn't trigger this because of it's loopState
     // so it's only when normal videos stop
     if ( videoPointer->getIsMovieDone() ) {
-        cout << "video finished\n";        
-        // play the attractor
-        playVideo(0);
+        cout << "video finished, nPlaying(" << nPlaying << ")" << endl;
+        
+        // are there any more videos to play?
+        if ( nPlaying >= 5 ) {
+            
+            // play the attractor
+            playVideo(0);
+        }
+        else {
+            
+            // increase the nPlaying number to the next video in the array
+            nPlaying++;
+
+            playVideo( sequence[nPlaying] );
+        }
+        
     }
     
     videoPointer->update();
@@ -102,8 +135,6 @@ void ofApp::updateVideo(){
 
 //--------------------------------------------------------------
 void ofApp::drawVideo(){
-    
-    ofPushMatrix();
     
     // convert width and height to floats so we can use decimals
     float screenWidth = ofGetWidth();
@@ -142,8 +173,22 @@ void ofApp::drawVideo(){
         
     }
     
-    ofPopMatrix();
+}
+
+//--------------------------------------------------------------
+void ofApp::generateVideoSequence(){
+    cout << "generateVideoSequence" << endl;
     
+    // create a new sequence randomly and replace current sequence
+    sequence[0] = round( ofRandom(1, 2) ); // welcome
+    sequence[1] = round( ofRandom(3, 5) ); // tour
+    sequence[2] = round( ofRandom(6, 9) ); // question
+    sequence[3] = 10; // meeting
+    sequence[4] = round( ofRandom(11, 12) ); // reflection
+    sequence[5] = 13; // end
+    
+    // reset the playhead so the next video will be the first in the sequence
+    nPlaying = 0;
 }
 
 //--------------------------------------------------------------
@@ -155,16 +200,28 @@ void ofApp::keyPressed(int key){
 void ofApp::keyReleased(int key){
     
     if (key == 'a') {
+        
         playVideo(0);
+        
     }
-    else if (key == 'b') {
-        playVideo(1);
+    else if (key == 'g') {
+        
+        // regenerate a new video sequence
+        generateVideoSequence();
+        
+        // play the first video in the sequence
+        playVideo(sequence[nPlaying]);
+        
     }
     else if (key == 'f') {
+        
         ofToggleFullscreen();
+        
     }
     else if (key == 's') {
+        
         videoMaxScale = !videoMaxScale;
+        
     }
     
 }

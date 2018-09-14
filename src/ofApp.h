@@ -2,6 +2,9 @@
 
 #include "ofMain.h"
 
+#define VIDEOS_LENGTH 14
+#define SEQUENCE_LENGTH 6
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -21,6 +24,10 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
+        //
+        // VIDEO RENDER STUFF
+        //
+    
         // use these functions to start each new video
         // we don't access the array of videos directly
         void playVideo(int n);
@@ -34,9 +41,23 @@ class ofApp : public ofBaseApp{
         bool videoMaxScale = false;
     
         // array of all the video files
-        ofVideoPlayer videos[14];
+        ofVideoPlayer videos[VIDEOS_LENGTH];
     
         // Pointer to ofVideoPlayer
         ofVideoPlayer *videoPointer;
+    
+        //
+        // VIDEO SEQUENCE STUFF
+        //
+    
+        // use these functions to regenerate a list of videos to play
+        void generateVideoSequence();
+    
+        // Array to hold the generated video sequence
+        // each number represents a video from the video array
+        int sequence[SEQUENCE_LENGTH];
+    
+        // int to remember which video we're playing
+        int nPlaying;
     
 };
