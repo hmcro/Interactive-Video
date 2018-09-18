@@ -1,10 +1,7 @@
 # Interactive-Video for Citizen Rotation Office
 
-## Contributing
-This repo is using LFS to store the video files. But there’s an authentication error with LFS which I overcame using:
-```
-git config 'lfs.locksverify' false
-```
+## Videos
+The videos are not included in this repo because they're too big!
 
 ## Compiling
 To ensure the video files are included in the bundle there's a script that is used in xcode.
