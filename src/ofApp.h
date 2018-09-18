@@ -32,13 +32,10 @@ class ofApp : public ofBaseApp{
         // we don't access the array of videos directly
         void playVideo(int n);
         void updateVideo();
-        void drawVideo();
+        void drawVideo(int x, int y, int w, int h);
     
         // fixed ratio that we compare against to resize & scale the video
         const float hdVideoRatio = 1.777;
-    
-        // do we scale the video to the max size and fill the screen
-        bool videoMaxScale = false;
     
         // array of all the video files
         ofVideoPlayer videos[VIDEOS_LENGTH];
@@ -59,5 +56,19 @@ class ofApp : public ofBaseApp{
     
         // int to remember which video we're playing
         int nPlaying;
+    
+        //
+        // GFX STUFF
+        //
+    
+        void drawDebugInfo(int x, int y, int w, int h);
+        void drawGFX(float x, float y, float w, float h);
+    
+        // padding to space things away from the edge of the screen (percent)
+        const float gfxPaddingX = 0.055;
+        const float gfxPaddingY = 0.02;
+    
+        // logo
+        ofImage logo;
     
 };

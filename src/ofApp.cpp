@@ -7,6 +7,9 @@ void ofApp::setup(){
     // into the /Resources/data/ folder every time we run the project
     // so we must tell oF to load from the correct folder
     ofSetDataPathRoot("../Resources/data/");
+    
+    // load the logo
+    logo.load("HMCROLOGOx150px.png");
 
     // load all video urls into array
     videos[0].load("Attractor.mp4");
@@ -51,57 +54,33 @@ void ofApp::draw(){
     
     ofBackground(0);
     
-    drawVideo();
+    // convert width and height to floats so we can use decimals
+    float screenWidth = ofGetWidth();
+    float screenHeight = ofGetHeight();
+    float screenRatio = screenWidth / screenHeight;
     
-    string str = "VIDEO SEQUENCER";
-    str += "\n\nA = attractor video";
-    str += "\nG = Generate sequence";
-    str += "\nF = fullscreen";
-    str += "\nS = scale mode";
-    if (videoMaxScale) {
-        str += " (max)";
+    // check the screen ratio and stretch the width or the height
+    if (screenRatio >= hdVideoRatio) {
+        
+        // wider
+        
+        float newWidth = screenHeight*hdVideoRatio;
+        drawVideo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
+        drawGFX((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
+        drawDebugInfo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
+        
     }
     else {
-        str += " (with borders)";
+        
+        // taller
+        
+        float newHeight = screenWidth/hdVideoRatio;
+        drawVideo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
+        drawGFX(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
+        drawDebugInfo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
+        
     }
-    
-    str += "\n\nSequence: ";
-    
-    // output the seuqnce order and highlight the new video position
-    for(int i = 0; i < SEQUENCE_LENGTH; i++) {
-        if (i == nPlaying) {
-            str += "[";
-        }
-        str += ofToString(sequence[i]);
-        if (i == nPlaying) {
-            str += "]";
-        }
-        if (i < SEQUENCE_LENGTH-1) {
-            str += ",";
-        }
-    }
-    
-    ofDrawBitmapString(str, 50, 50);
 
-}
-
-//--------------------------------------------------------------
-void ofApp::playVideo(int n){
-    
-    // stop any existing video
-    if (videoPointer) {
-        videoPointer->stop();
-    }
-    
-    // switch to the new video using a pointer
-    videoPointer = &videos[n];
-    
-    // set to starting frame
-    videoPointer->setPosition(0);
-    
-    // start playing from the beginning
-    videoPointer->play();
-    
 }
 
 //--------------------------------------------------------------
@@ -134,44 +113,23 @@ void ofApp::updateVideo(){
 }
 
 //--------------------------------------------------------------
-void ofApp::drawVideo(){
+void ofApp::drawVideo(int x, int y, int w, int h){
     
-    // convert width and height to floats so we can use decimals
-    float screenWidth = ofGetWidth();
-    float screenHeight = ofGetHeight();
-    float screenRatio = screenWidth / screenHeight;
+    videoPointer->draw(x, y, w, h);
     
-    // check the screen ratio and stretch the width or the height
-    if (screenRatio >= hdVideoRatio) {
-        
-        // wider
-        
-        if (videoMaxScale) {
-            // draw the video in the absolute center and without borders
-            float newHeight = screenWidth/hdVideoRatio;
-            videoPointer->draw(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        }
-        else {
-            float newWidth = screenHeight*hdVideoRatio;
-            videoPointer->draw((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        }
-        
-    }
-    else {
-        
-        // taller
-        
-        if (videoMaxScale) {
-            // draw the video in the absolute center and without borders
-            float newWidth = screenHeight*hdVideoRatio;
-            videoPointer->draw((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        }
-        else {
-            float newHeight = screenWidth/hdVideoRatio;
-            videoPointer->draw(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        }
-        
-    }
+}
+
+//--------------------------------------------------------------
+void ofApp::drawGFX(float x, float y, float w, float h){
+    
+    float scale = w / 1920.0f;
+    
+    // draw the logo at the correct scale
+    logo.draw( x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-(h*gfxPaddingY),
+              logo.getWidth()*scale, logo.getHeight()*scale );
+    
+    ofDrawLine( x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((h*gfxPaddingY)*2),
+               w-(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((h*gfxPaddingY)*2) );
     
 }
 
@@ -189,6 +147,53 @@ void ofApp::generateVideoSequence(){
     
     // reset the playhead so the next video will be the first in the sequence
     nPlaying = 0;
+}
+
+//--------------------------------------------------------------
+void ofApp::playVideo(int n){
+    
+    // stop any existing video
+    if (videoPointer) {
+        videoPointer->stop();
+    }
+    
+    // switch to the new video using a pointer
+    videoPointer = &videos[n];
+    
+    // set to starting frame
+    videoPointer->setPosition(0);
+    
+    // start playing from the beginning
+    videoPointer->play();
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::drawDebugInfo(int x, int y, int w, int h){
+    
+    string str = "VIDEO SEQUENCER";
+    str += "\n\nA = attractor video";
+    str += "\nG = Generate sequence";
+    str += "\nF = fullscreen";
+    str += "\nS = scale mode";
+    
+    str += "\n\nSequence: ";
+    
+    // output the seuqnce order and highlight the new video position
+    for(int i = 0; i < SEQUENCE_LENGTH; i++) {
+        if (i == nPlaying) {
+            str += "[";
+        }
+        str += ofToString(sequence[i]);
+        if (i == nPlaying) {
+            str += "]";
+        }
+        if (i < SEQUENCE_LENGTH-1) {
+            str += ",";
+        }
+    }
+    
+    ofDrawBitmapString(str, x+(w*gfxPaddingX), y+(w*gfxPaddingX));
 }
 
 //--------------------------------------------------------------
@@ -216,11 +221,6 @@ void ofApp::keyReleased(int key){
     else if (key == 'f') {
         
         ofToggleFullscreen();
-        
-    }
-    else if (key == 's') {
-        
-        videoMaxScale = !videoMaxScale;
         
     }
     
