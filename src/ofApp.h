@@ -5,6 +5,7 @@
 
 #define VIDEOS_LENGTH 14
 #define SEQUENCE_LENGTH 6
+#define MAX_VISITORS 40
 
 class ofApp : public ofBaseApp{
 
@@ -70,8 +71,21 @@ class ofApp : public ofBaseApp{
     
         // logo
         ofxSVG logo;
+        ofxSVG person;
+    
+        // audio
+        ofSoundPlayer  ding;
     
         // flag to show/hide the debug controls and keyboard shortcuts
-        bool showControls = false;
+        bool showControls = true;
     
+        //
+        // INTERACTIVE STUFF
+        //
+    
+        // vector to hold the unique ids for every visitor
+        vector<string> visitors;
+    
+        void addVisitor();
+        void removeVisitor();
 };

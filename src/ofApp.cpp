@@ -8,8 +8,12 @@ void ofApp::setup(){
     // so we must tell oF to load from the correct folder
     ofSetDataPathRoot("../Resources/data/");
     
-    // load the logo
+    // load the GFX
     logo.load("hmcro-logo.svg");
+    person.load("person-icon.svg");
+    
+    // load the audio
+    ding.load("91926__corsica-s__ding.wav");
 
     // load all video urls into array
     videos[0].load("Attractor.mp4");
@@ -44,6 +48,9 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    // update the sound playing system:
+    ofSoundUpdate();
     
     // check if the video has finished
     // the attractor doesn't trigger this because of it's loopState
@@ -123,16 +130,40 @@ void ofApp::drawGFX(float x, float y, float w, float h){
     
     float scale = w / 1920.0f;
     
-    ofPushMatrix();
-    
     // move to bottom of screen to draw logo
+    ofPushMatrix();
     ofTranslate(x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-(h*gfxPaddingY));
     
     // draw the logo at the correct scale
     ofScale(scale, scale);
     
-    // draw the SVG
+    // draw the logo
     logo.draw();
+    
+    ofPopMatrix();
+    
+    
+    
+    // move to bottom of screen to draw logo
+    ofPushMatrix();
+    ofTranslate(w-(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((person.getHeight()*scale)/2));
+    
+    // create an iterator that points to the first element
+    vector<string>::iterator it = visitors.begin();
+    
+    // loop through, increasing to next element until the end is reached
+    for(; it != visitors.end(); ++it){
+        // draw the people icons
+        ofTranslate(-(person.getWidth()*scale), 0);
+        
+        // scale the icon to the right size
+        ofPushMatrix();
+        ofScale(scale, scale);
+        person.draw();
+        ofPopMatrix();
+        
+        ofTranslate(-5, 0);
+    }
     
     ofPopMatrix();
     
@@ -149,10 +180,11 @@ void ofApp::drawDebugInfo(int x, int y, int w, int h){
     str += "\n\nA = attractor video";
     str += "\nG = Generate sequence";
     str += "\nF = fullscreen";
-    
+    str += "\n+ = Add 1 visitor";
+    str += "\n- = Remove 1 visitor";
     str += "\n\nSequence: ";
     
-    // output the seuqnce order and highlight the new video position
+    // output the sequence order and highlight the new video position
     for(int i = 0; i < SEQUENCE_LENGTH; i++) {
         if (i == nPlaying) {
             str += "[";
@@ -165,6 +197,8 @@ void ofApp::drawDebugInfo(int x, int y, int w, int h){
             str += ",";
         }
     }
+    
+    str += "\n\nVisitors: " + ofToString(visitors.size());
     
     ofDrawBitmapString(str, x+(w*gfxPaddingX), y+(w*gfxPaddingX));
 }
@@ -232,9 +266,60 @@ void ofApp::keyReleased(int key){
         
     }
     
+    else if (key == '+') {
+        
+        addVisitor();
+        
+    }
+    
+    else if (key == '-') {
+        
+        removeVisitor();
+        
+    }
+    
     else if (key == ' ') {
         
         showControls = !showControls;
+        
+    }
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::addVisitor(){
+    
+    if (visitors.size() < MAX_VISITORS) {
+        
+        // add random ID to the vector
+        string id = "L";
+        id += "S";
+        id += "0";
+        id += "1";
+        id += "2";
+        id += "3";
+        id += "4";
+        id += "D";
+        
+        visitors.push_back( id );
+        
+        // play the audio sound
+        ding.play();
+        
+    }
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::removeVisitor(){
+    
+    if (visitors.size() > 0) {
+        
+        // erase the first element in the vector
+        visitors.erase( visitors.begin() );
+        
+        // play the audio sound
+        ding.play();
         
     }
     
