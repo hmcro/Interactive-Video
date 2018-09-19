@@ -9,7 +9,7 @@ void ofApp::setup(){
     ofSetDataPathRoot("../Resources/data/");
     
     // load the logo
-    logo.load("HMCROLOGOx150px.png");
+    logo.load("hmcro-logo.svg");
 
     // load all video urls into array
     videos[0].load("Attractor.mp4");
@@ -45,7 +45,29 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    updateVideo();
+    // check if the video has finished
+    // the attractor doesn't trigger this because of it's loopState
+    // so it's only when normal videos stop
+    if ( videoPointer->getIsMovieDone() ) {
+        cout << "video finished, nPlaying(" << nPlaying << ")" << endl;
+        
+        // are there any more videos to play?
+        if ( nPlaying >= SEQUENCE_LENGTH-1 ) {
+            
+            // play the attractor
+            playVideo(0);
+        }
+        else {
+            
+            // increase the nPlaying number to the next video in the array
+            nPlaying++;
+            
+            playVideo( sequence[nPlaying] );
+        }
+        
+    }
+    
+    videoPointer->update();
 
 }
 
@@ -67,7 +89,10 @@ void ofApp::draw(){
         float newWidth = screenHeight*hdVideoRatio;
         drawVideo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
         drawGFX((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        drawDebugInfo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
+        
+        if (showControls) {
+            drawDebugInfo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
+        }
         
     }
     else {
@@ -77,39 +102,13 @@ void ofApp::draw(){
         float newHeight = screenWidth/hdVideoRatio;
         drawVideo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
         drawGFX(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        drawDebugInfo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
         
-    }
-
-}
-
-//--------------------------------------------------------------
-void ofApp::updateVideo(){
-    
-    // check if the video has finished
-    // the attractor doesn't trigger this because of it's loopState
-    // so it's only when normal videos stop
-    if ( videoPointer->getIsMovieDone() ) {
-        cout << "video finished, nPlaying(" << nPlaying << ")" << endl;
-        
-        // are there any more videos to play?
-        if ( nPlaying >= 5 ) {
-            
-            // play the attractor
-            playVideo(0);
-        }
-        else {
-            
-            // increase the nPlaying number to the next video in the array
-            nPlaying++;
-
-            playVideo( sequence[nPlaying] );
+        if (showControls) {
+            drawDebugInfo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
         }
         
     }
-    
-    videoPointer->update();
-    
+
 }
 
 //--------------------------------------------------------------
@@ -124,13 +123,50 @@ void ofApp::drawGFX(float x, float y, float w, float h){
     
     float scale = w / 1920.0f;
     
-    // draw the logo at the correct scale
-    logo.draw( x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-(h*gfxPaddingY),
-              logo.getWidth()*scale, logo.getHeight()*scale );
+    ofPushMatrix();
     
+    // move to bottom of screen to draw logo
+    ofTranslate(x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-(h*gfxPaddingY));
+    
+    // draw the logo at the correct scale
+    ofScale(scale, scale);
+    
+    // draw the SVG
+    logo.draw();
+    
+    ofPopMatrix();
+    
+    // draw the line
     ofDrawLine( x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((h*gfxPaddingY)*2),
                w-(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((h*gfxPaddingY)*2) );
     
+}
+
+//--------------------------------------------------------------
+void ofApp::drawDebugInfo(int x, int y, int w, int h){
+    
+    string str = "VIDEO SEQUENCER";
+    str += "\n\nA = attractor video";
+    str += "\nG = Generate sequence";
+    str += "\nF = fullscreen";
+    
+    str += "\n\nSequence: ";
+    
+    // output the seuqnce order and highlight the new video position
+    for(int i = 0; i < SEQUENCE_LENGTH; i++) {
+        if (i == nPlaying) {
+            str += "[";
+        }
+        str += ofToString(sequence[i]);
+        if (i == nPlaying) {
+            str += "]";
+        }
+        if (i < SEQUENCE_LENGTH-1) {
+            str += ",";
+        }
+    }
+    
+    ofDrawBitmapString(str, x+(w*gfxPaddingX), y+(w*gfxPaddingX));
 }
 
 //--------------------------------------------------------------
@@ -169,34 +205,6 @@ void ofApp::playVideo(int n){
 }
 
 //--------------------------------------------------------------
-void ofApp::drawDebugInfo(int x, int y, int w, int h){
-    
-    string str = "VIDEO SEQUENCER";
-    str += "\n\nA = attractor video";
-    str += "\nG = Generate sequence";
-    str += "\nF = fullscreen";
-    str += "\nS = scale mode";
-    
-    str += "\n\nSequence: ";
-    
-    // output the seuqnce order and highlight the new video position
-    for(int i = 0; i < SEQUENCE_LENGTH; i++) {
-        if (i == nPlaying) {
-            str += "[";
-        }
-        str += ofToString(sequence[i]);
-        if (i == nPlaying) {
-            str += "]";
-        }
-        if (i < SEQUENCE_LENGTH-1) {
-            str += ",";
-        }
-    }
-    
-    ofDrawBitmapString(str, x+(w*gfxPaddingX), y+(w*gfxPaddingX));
-}
-
-//--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
 }
@@ -221,6 +229,12 @@ void ofApp::keyReleased(int key){
     else if (key == 'f') {
         
         ofToggleFullscreen();
+        
+    }
+    
+    else if (key == ' ') {
+        
+        showControls = !showControls;
         
     }
     

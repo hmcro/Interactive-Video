@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxSvg.h"
 
 #define VIDEOS_LENGTH 14
 #define SEQUENCE_LENGTH 6
@@ -31,7 +32,6 @@ class ofApp : public ofBaseApp{
         // use these functions to start each new video
         // we don't access the array of videos directly
         void playVideo(int n);
-        void updateVideo();
         void drawVideo(int x, int y, int w, int h);
     
         // fixed ratio that we compare against to resize & scale the video
@@ -69,6 +69,9 @@ class ofApp : public ofBaseApp{
         const float gfxPaddingY = 0.02;
     
         // logo
-        ofImage logo;
+        ofxSVG logo;
+    
+        // flag to show/hide the debug controls and keyboard shortcuts
+        bool showControls = false;
     
 };
