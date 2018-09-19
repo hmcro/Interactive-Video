@@ -58,9 +58,14 @@ class ofApp : public ofBaseApp{
         // int to remember which video we're playing
         int nPlaying;
     
+        bool isSequencePlaying = false;
+    
         //
         // GFX STUFF
         //
+    
+        ofColor orange1;
+        ofColor orange2;
     
         void drawDebugInfo(int x, int y, int w, int h);
         void drawGFX(float x, float y, float w, float h);
@@ -88,4 +93,9 @@ class ofApp : public ofBaseApp{
     
         void addVisitor();
         void removeVisitor();
+        char getRandomChar();
+    
+        // timer to show the visitors id
+        float visitorStartTime;
+        bool isVisitorAnimating = false;
 };

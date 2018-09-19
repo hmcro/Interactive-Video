@@ -8,6 +8,10 @@ void ofApp::setup(){
     // so we must tell oF to load from the correct folder
     ofSetDataPathRoot("../Resources/data/");
     
+    // set the colour
+    orange1.setHex(0xE9501E);
+    orange2.setHex(0xAF2C00);
+    
     // load the GFX
     logo.load("hmcro-logo.svg");
     person.load("person-icon.svg");
@@ -63,6 +67,8 @@ void ofApp::update(){
             
             // play the attractor
             playVideo(0);
+            
+            isSequencePlaying = false;
         }
         else {
             
@@ -75,6 +81,16 @@ void ofApp::update(){
     }
     
     videoPointer->update();
+    
+    if (isVisitorAnimating) {
+        float timer = ofGetElapsedTimef() - visitorStartTime;
+        
+        // check and stop the timer
+        if (timer >= 6) {
+            cout << "stop the timer" << endl;
+            isVisitorAnimating = false;
+        }
+    }
 
 }
 
@@ -130,6 +146,10 @@ void ofApp::drawGFX(float x, float y, float w, float h){
     
     float scale = w / 1920.0f;
     
+    // draw the line
+    ofDrawLine( x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((h*gfxPaddingY)*2),
+               w-(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((h*gfxPaddingY)*2) );
+    
     // move to bottom of screen to draw logo
     ofPushMatrix();
     ofTranslate(x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-(h*gfxPaddingY));
@@ -165,11 +185,19 @@ void ofApp::drawGFX(float x, float y, float w, float h){
         ofTranslate(-5, 0);
     }
     
-    ofPopMatrix();
+    if (isVisitorAnimating) {
+        // nudge up a little and draw the string
+        ofTranslate((person.getWidth()*scale)/2+5, -50);
+        ofDrawBitmapStringHighlight("Citizen #" + visitors.back() + " detected", -110, 0, orange2);
+        
+        ofPushStyle();
+        ofSetColor(orange2);
+        ofDrawLine(0, 0, 0, 50);
+        ofPopStyle();
+    }
     
-    // draw the line
-    ofDrawLine( x+(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((h*gfxPaddingY)*2),
-               w-(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((h*gfxPaddingY)*2) );
+    
+    ofPopMatrix();
     
 }
 
@@ -178,11 +206,11 @@ void ofApp::drawDebugInfo(int x, int y, int w, int h){
     
     string str = "VIDEO SEQUENCER";
     str += "\n\nA = attractor video";
-    str += "\nG = Generate sequence";
     str += "\nF = fullscreen";
     str += "\n+ = Add 1 visitor";
     str += "\n- = Remove 1 visitor";
-    str += "\n\nSequence: ";
+    str += "\n\nisPlayingSequence: " + ofToString(isSequencePlaying);
+    str += "\nSequence: ";
     
     // output the sequence order and highlight the new video position
     for(int i = 0; i < SEQUENCE_LENGTH; i++) {
@@ -198,7 +226,7 @@ void ofApp::drawDebugInfo(int x, int y, int w, int h){
         }
     }
     
-    str += "\n\nVisitors: " + ofToString(visitors.size());
+    str += "\nVisitors: " + ofToString(visitors.size());
     
     ofDrawBitmapString(str, x+(w*gfxPaddingX), y+(w*gfxPaddingX));
 }
@@ -251,15 +279,6 @@ void ofApp::keyReleased(int key){
         playVideo(0);
         
     }
-    else if (key == 'g') {
-        
-        // regenerate a new video sequence
-        generateVideoSequence();
-        
-        // play the first video in the sequence
-        playVideo(sequence[nPlaying]);
-        
-    }
     else if (key == 'f') {
         
         ofToggleFullscreen();
@@ -280,6 +299,7 @@ void ofApp::keyReleased(int key){
     
     else if (key == ' ') {
         
+        // toggle the controls top left
         showControls = !showControls;
         
     }
@@ -292,19 +312,35 @@ void ofApp::addVisitor(){
     if (visitors.size() < MAX_VISITORS) {
         
         // add random ID to the vector
-        string id = "L";
-        id += "S";
-        id += "0";
-        id += "1";
-        id += "2";
-        id += "3";
-        id += "4";
-        id += "D";
+        string id = "";
+        id += getRandomChar();
+        id += getRandomChar();
+        id += ofToString( rand() % 9 + 1 );
+        id += ofToString( rand() % 9 + 1 );
+        id += ofToString( rand() % 9 + 1 );
+        id += ofToString( rand() % 9 + 1 );
+        id += ofToString( visitors.size() % 10 );
+        id += getRandomChar();
         
         visitors.push_back( id );
         
         // play the audio sound
         ding.play();
+        
+        // start the timer to show/hide the id
+        visitorStartTime = ofGetElapsedTimef();
+        isVisitorAnimating = true;
+        
+        if (!isSequencePlaying) {
+            
+            // regenerate a new video sequence
+            generateVideoSequence();
+            
+            // play the first video in the sequence
+            playVideo(sequence[nPlaying]);
+            
+            isSequencePlaying = true;
+        }
         
     }
     
@@ -315,14 +351,21 @@ void ofApp::removeVisitor(){
     
     if (visitors.size() > 0) {
         
-        // erase the first element in the vector
-        visitors.erase( visitors.begin() );
+        // erase the last element in the vector
+        visitors.pop_back();
         
         // play the audio sound
         ding.play();
         
     }
     
+}
+
+
+//--------------------------------------------------------------
+char ofApp::getRandomChar(){
+    
+    return rand() % 26 + 'A';
 }
 
 //--------------------------------------------------------------
