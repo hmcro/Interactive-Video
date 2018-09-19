@@ -276,6 +276,7 @@ void ofApp::keyReleased(int key){
     
     if (key == 'a') {
         
+        isSequencePlaying = false;
         playVideo(0);
         
     }
@@ -356,6 +357,11 @@ void ofApp::removeVisitor(){
         
         // play the audio sound
         ding.play();
+        
+        // check and hide the id if everyone's left
+        if ( visitors.size() == 0 ) {
+            isVisitorAnimating = false;
+        }
         
     }
     
