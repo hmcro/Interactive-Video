@@ -3,8 +3,8 @@
 #include "ofMain.h"
 #include "ofxSvg.h"
 
-#define VIDEOS_LENGTH 14
-#define SEQUENCE_LENGTH 6
+#define VIDEOS_LENGTH 15
+#define SEQUENCE_LENGTH 7
 #define MAX_VISITORS 40
 
 class ofApp : public ofBaseApp{

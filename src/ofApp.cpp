@@ -34,6 +34,7 @@ void ofApp::setup(){
     videos[11].load("Reflection1.mp4");
     videos[12].load("Reflection2.mp4");
     videos[13].load("End1.mp4");
+    videos[14].load("Detected.mp4");
     
     cout << "tell all the videos to only play once" << endl;
     
@@ -236,12 +237,13 @@ void ofApp::generateVideoSequence(){
     cout << "generateVideoSequence" << endl;
     
     // create a new sequence randomly and replace current sequence
-    sequence[0] = round( ofRandom(1, 2) ); // welcome
-    sequence[1] = round( ofRandom(3, 5) ); // tour
-    sequence[2] = round( ofRandom(6, 9) ); // question
-    sequence[3] = 10; // meeting
-    sequence[4] = round( ofRandom(11, 12) ); // reflection
-    sequence[5] = 13; // end
+    sequence[0] = 14; // detected
+    sequence[1] = round( ofRandom(1, 2) ); // welcome
+    sequence[2] = round( ofRandom(3, 5) ); // tour
+    sequence[3] = round( ofRandom(6, 9) ); // question
+    sequence[4] = 10; // meeting
+    sequence[5] = round( ofRandom(11, 12) ); // reflection
+    sequence[6] = 13; // end
     
     // reset the playhead so the next video will be the first in the sequence
     nPlaying = 0;
