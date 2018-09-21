@@ -346,7 +346,7 @@ void ofApp::windowResized(int w, int h){
     float screenRatio = screenWidth / screenHeight;
     
     // check the screen ratio and stretch the width or the height
-    if (screenRatio >= hdVideoRatio) {
+    if (screenRatio >= 1.777) {
         
         // wider
         float newWidth = screenHeight*hdVideoRatio;

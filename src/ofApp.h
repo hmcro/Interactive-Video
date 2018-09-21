@@ -27,9 +27,6 @@ class ofApp : public ofBaseApp{
         // we don't access the array of videos directly
         void playVideo(int n);
     
-        // fixed ratio that we compare against to resize & scale the video
-        const float hdVideoRatio = 1.777;
-    
         ofRectangle videoSize;
     
         // array of all the video files
