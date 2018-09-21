@@ -18,7 +18,7 @@ class ofApp : public ofBaseApp{
 		void keyReleased(int key);
 		void windowResized(int w, int h);
 		void gotMessage(ofMessage msg);
-    void exit();
+        void exit();
     
     
         //
