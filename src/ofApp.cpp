@@ -8,6 +8,12 @@ void ofApp::setup(){
     // so we must tell oF to load from the correct folder
     ofSetDataPathRoot("../Resources/data/");
     
+    // Load a movie file
+    player.load("DM01 - Attractor_3.mov");
+    
+    // Start playback
+    player.play();
+    
     // set the colour
     orange1.setHex(0xE9501E);
     orange2.setHex(0xAF2C00);
@@ -20,39 +26,40 @@ void ofApp::setup(){
     ding.load("91926__corsica-s__ding.wav");
 
     // load all video urls into array
-    videos[0].load("Attractor.mp4");
-    videos[1].load("Welcome1.mp4");
-    videos[2].load("Welcome2.mp4");
-    videos[3].load("Tour1.mp4");
-    videos[4].load("Tour2.mp4");
-    videos[5].load("Tour3.mp4");
-    videos[6].load("Questions1.mp4");
-    videos[7].load("Questions2.mp4");
-    videos[8].load("Questions3.mp4");
-    videos[9].load("Questions4.mp4");
-    videos[10].load("Meeting1.mp4");
-    videos[11].load("Reflection1.mp4");
-    videos[12].load("Reflection2.mp4");
-    videos[13].load("End1.mp4");
-    videos[14].load("Detected.mp4");
-    
-    cout << "tell all the videos to only play once" << endl;
+//    videos[0].load("Attractor.mp4");
+//    videos[1].load("Welcome1.mp4");
+//    videos[2].load("Welcome2.mp4");
+//    videos[3].load("Tour1.mp4");
+//    videos[4].load("Tour2.mp4");
+//    videos[5].load("Tour3.mp4");
+//    videos[6].load("Questions1.mp4");
+//    videos[7].load("Questions2.mp4");
+//    videos[8].load("Questions3.mp4");
+//    videos[9].load("Questions4.mp4");
+//    videos[10].load("Meeting1.mp4");
+//    videos[11].load("Reflection1.mp4");
+//    videos[12].load("Reflection2.mp4");
+//    videos[13].load("End.mp4");
+//    videos[14].load("Detected.mp4");
     
     // tell all the videos to only play once
     for(int i = 0; i < VIDEOS_LENGTH; i++) {
-        videos[i].setLoopState(OF_LOOP_NONE);
+//        videos[i].setLoopState(OF_LOOP_NONE);
     }
     
     // BUT tell the attractor to play on looping
-    videos[0].setLoopState(OF_LOOP_NORMAL);
+//    videos[0].setLoopState(OF_LOOP_NORMAL);
     
     // start playing the attractor video immediately
-    playVideo(0);
+//    playVideo(0);
     
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    // Signal the player to update
+    player.update();
     
     // update the sound playing system:
     ofSoundUpdate();
@@ -60,28 +67,28 @@ void ofApp::update(){
     // check if the video has finished
     // the attractor doesn't trigger this because of it's loopState
     // so it's only when normal videos stop
-    if ( videoPointer->getIsMovieDone() ) {
-        cout << "video finished, nPlaying(" << nPlaying << ")" << endl;
-        
-        // are there any more videos to play?
-        if ( nPlaying >= SEQUENCE_LENGTH-1 ) {
-            
-            // play the attractor
-            playVideo(0);
-            
-            isSequencePlaying = false;
-        }
-        else {
-            
-            // increase the nPlaying number to the next video in the array
-            nPlaying++;
-            
-            playVideo( sequence[nPlaying] );
-        }
-        
-    }
-    
-    videoPointer->update();
+//    if ( videoPointer->getIsMovieDone() ) {
+//        cout << "video finished, nPlaying(" << nPlaying << ")" << endl;
+//
+//        // are there any more videos to play?
+//        if ( nPlaying >= SEQUENCE_LENGTH-1 ) {
+//
+//            // play the attractor
+//            playVideo(0);
+//
+//            isSequencePlaying = false;
+//        }
+//        else {
+//
+//            // increase the nPlaying number to the next video in the array
+//            nPlaying++;
+//
+//            playVideo( sequence[nPlaying] );
+//        }
+//
+//    }
+//
+//    videoPointer->update();
     
     if (isVisitorAnimating) {
         float timer = ofGetElapsedTimef() - visitorStartTime;
@@ -132,13 +139,15 @@ void ofApp::draw(){
         }
         
     }
+    
+    player.draw(0, 0);
 
 }
 
 //--------------------------------------------------------------
 void ofApp::drawVideo(int x, int y, int w, int h){
     
-    videoPointer->draw(x, y, w, h);
+//    videoPointer->draw(x, y, w, h);
     
 }
 

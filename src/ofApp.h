@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxSvg.h"
+#include "ofxHapPlayer.h"
 
 #define VIDEOS_LENGTH 15
 #define SEQUENCE_LENGTH 7
@@ -25,6 +26,8 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    
+    ofxHapPlayer player;
     
         //
         // VIDEO RENDER STUFF
