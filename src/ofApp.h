@@ -43,9 +43,6 @@ class ofApp : public ofBaseApp{
         // array of all the video files
         ofxHapPlayer videos[VIDEOS_LENGTH];
     
-        // Pointer to ofVideoPlayer
-        ofxHapPlayer *videoPointer;
-    
         //
         // VIDEO SEQUENCE STUFF
         //

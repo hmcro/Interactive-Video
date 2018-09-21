@@ -58,7 +58,7 @@ void ofApp::update(){
     // check if the video has finished
     // the attractor doesn't trigger this because of it's loopState
     // so it's only when normal videos stop
-    if ( videoPointer->getIsMovieDone() ) {
+    if ( videos[nPlaying].getIsMovieDone() ) {
         cout << "video finished, nPlaying(" << nPlaying << ")" << endl;
 
         // are there any more videos to play?
@@ -79,7 +79,7 @@ void ofApp::update(){
 
     }
 
-    videoPointer->update();
+    videos[nPlaying].update();
     
     if (isVisitorAnimating) {
         float timer = ofGetElapsedTimef() - visitorStartTime;
@@ -136,7 +136,7 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::drawVideo(int x, int y, int w, int h){
     
-    videoPointer->draw(x, y, w, h);
+    videos[nPlaying].draw(x, y, w, h);
     
 }
 
@@ -251,18 +251,13 @@ void ofApp::generateVideoSequence(){
 void ofApp::playVideo(int n){
     
     // stop any existing video
-    if (videoPointer) {
-        videoPointer->stop();
-    }
-    
-    // switch to the new video using a pointer
-    videoPointer = &videos[n];
+    videos[nPlaying].stop();
     
     // set to starting frame
-    videoPointer->setPosition(0);
+    videos[nPlaying].setPosition(0);
     
     // start playing from the beginning
-    videoPointer->play();
+    videos[nPlaying].play();
     
 }
 
