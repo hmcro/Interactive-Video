@@ -3,6 +3,8 @@
 ## Videos
 The videos are not included in this repo because they're too big!
 
+They were exported as Quicktime files with the Animation codec, to ensure they're full quality. Then I followed the [encoding guide](https://gist.github.com/dlublin/e4585b872dd136ae88b2aa51a6a89aac) to encode the videos as HAP using ffmpeg through the command line.
+
 ## Compiling
 To ensure the video files are included in the bundle there's a script that is used in xcode.
 ```
