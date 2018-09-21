@@ -8,6 +8,8 @@ void ofApp::setup(){
     // so we must tell oF to load from the correct folder
     ofSetDataPathRoot("../Resources/data/");
     
+    ofSetWindowTitle("Citizen Rotation Office");
+    
     // set the colour
     orange.setHex(0xAF2C00);
     
@@ -65,11 +67,33 @@ void ofApp::update(){
 
         // are there any more videos to play?
         if ( sequenceIndex >= SEQUENCE_LENGTH-1 ) {
-
-            // play the attractor
-            playVideo(0);
-
-            isSequencePlaying = false;
+            
+            if (numVisitorsChanged) {
+                
+                // start playing again
+            
+                // set the flag to false to record the current number of visitors
+                numVisitorsChanged = false;
+                
+                // regenerate a new video sequence
+                generateVideoSequence();
+                
+                // reset the index so the next video will be the first in the sequence
+                sequenceIndex = 0;
+                
+                // play the first video in the sequence
+                playVideo(sequence[sequenceIndex]);
+                
+                isSequencePlaying = true;
+            }
+            else {
+                
+                // play the attractor
+                playVideo(0);
+                
+                isSequencePlaying = false;
+            }
+            
         }
         else {
 
@@ -294,6 +318,9 @@ void ofApp::addVisitor(){
         
         if (!isSequencePlaying) {
             
+            // set the flag to false to record the current number of visitors
+            numVisitorsChanged = false;
+            
             // regenerate a new video sequence
             generateVideoSequence();
             
@@ -304,6 +331,10 @@ void ofApp::addVisitor(){
             playVideo(sequence[sequenceIndex]);
             
             isSequencePlaying = true;
+        }
+        else {
+            // we're already playing so the num of visitors has changed!
+            numVisitorsChanged = true;
         }
         
     }
@@ -324,6 +355,10 @@ void ofApp::removeVisitor(){
         // check and hide the id if everyone's left
         if ( visitors.size() == 0 ) {
             isVisitorAnimating = false;
+            numVisitorsChanged = false;
+        }
+        else {
+            numVisitorsChanged = true;
         }
         
     }
@@ -364,4 +399,21 @@ void ofApp::windowResized(int w, int h){
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
     
+}
+
+//--------------------------------------------------------------
+void ofApp::exit() {
+    
+    // stop the current video that's playing
+    videos[videosIndex].stop();
+    
+    // tell all the videos to only play once
+    for(int i = 0; i < VIDEOS_LENGTH; i++) {
+        videos[i].close();
+    }
+    
+    // stop and unload the sound
+    ding.unload();
+    
+    cout << "\nBYE!";
 }

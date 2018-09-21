@@ -18,10 +18,11 @@ class ofApp : public ofBaseApp{
 		void keyReleased(int key);
 		void windowResized(int w, int h);
 		void gotMessage(ofMessage msg);
+    void exit();
     
     
         //
-        // VIDEO RENDER STUFF
+        // VIDEO STUFF
         //
     
         // use these functions to start each new video
@@ -32,10 +33,6 @@ class ofApp : public ofBaseApp{
     
         // array of all the video files
         ofxHapPlayer videos[VIDEOS_LENGTH];
-    
-        //
-        // VIDEO SEQUENCE STUFF
-        //
     
         // use these functions to regenerate a list of videos to play
         void generateVideoSequence();
@@ -70,7 +67,7 @@ class ofApp : public ofBaseApp{
         ofSoundPlayer  ding;
     
         // flag to show/hide the debug controls and keyboard shortcuts
-        bool showControls = true;
+        bool showControls = false;
     
         //
         // INTERACTIVE STUFF
@@ -86,4 +83,5 @@ class ofApp : public ofBaseApp{
         // timer to show the visitors id
         float visitorStartTime;
         bool isVisitorAnimating = false;
+        bool numVisitorsChanged = false;
 };
