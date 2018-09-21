@@ -27,7 +27,6 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    ofxHapPlayer player;
     
         //
         // VIDEO RENDER STUFF
@@ -42,10 +41,10 @@ class ofApp : public ofBaseApp{
         const float hdVideoRatio = 1.777;
     
         // array of all the video files
-        ofVideoPlayer videos[VIDEOS_LENGTH];
+        ofxHapPlayer videos[VIDEOS_LENGTH];
     
         // Pointer to ofVideoPlayer
-        ofVideoPlayer *videoPointer;
+        ofxHapPlayer *videoPointer;
     
         //
         // VIDEO SEQUENCE STUFF
