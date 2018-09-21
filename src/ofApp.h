@@ -35,7 +35,6 @@ class ofApp : public ofBaseApp{
         // use these functions to start each new video
         // we don't access the array of videos directly
         void playVideo(int n);
-        void drawVideo(int x, int y, int w, int h);
     
         // fixed ratio that we compare against to resize & scale the video
         const float hdVideoRatio = 1.777;

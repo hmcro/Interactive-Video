@@ -109,7 +109,7 @@ void ofApp::draw(){
         // wider
         
         float newWidth = screenHeight*hdVideoRatio;
-        drawVideo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
+        videos[nPlaying].draw((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
         drawGFX((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
         
         if (showControls) {
@@ -122,7 +122,7 @@ void ofApp::draw(){
         // taller
         
         float newHeight = screenWidth/hdVideoRatio;
-        drawVideo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
+        videos[nPlaying].draw(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
         drawGFX(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
         
         if (showControls) {
@@ -133,12 +133,6 @@ void ofApp::draw(){
 
 }
 
-//--------------------------------------------------------------
-void ofApp::drawVideo(int x, int y, int w, int h){
-    
-    videos[nPlaying].draw(x, y, w, h);
-    
-}
 
 //--------------------------------------------------------------
 void ofApp::drawGFX(float x, float y, float w, float h){
