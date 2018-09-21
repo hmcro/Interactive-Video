@@ -8,9 +8,10 @@ void ofApp::setup(){
     // so we must tell oF to load from the correct folder
     ofSetDataPathRoot("../Resources/data/");
     
+    ofSetWindowTitle("Citizen Rotation Office");
+    
     // set the colour
-    orange1.setHex(0xE9501E);
-    orange2.setHex(0xAF2C00);
+    orange.setHex(0xAF2C00);
     
     // load the GFX
     logo.load("hmcro-logo.svg");
@@ -18,25 +19,26 @@ void ofApp::setup(){
     
     // load the audio
     ding.load("91926__corsica-s__ding.wav");
+    
+    // calculate the screen dimensions by calling the windowResized function
+    windowResized( ofGetWidth(), ofGetHeight() );
 
     // load all video urls into array
-    videos[0].load("Attractor.mp4");
-    videos[1].load("Welcome1.mp4");
-    videos[2].load("Welcome2.mp4");
-    videos[3].load("Tour1.mp4");
-    videos[4].load("Tour2.mp4");
-    videos[5].load("Tour3.mp4");
-    videos[6].load("Questions1.mp4");
-    videos[7].load("Questions2.mp4");
-    videos[8].load("Questions3.mp4");
-    videos[9].load("Questions4.mp4");
-    videos[10].load("Meeting1.mp4");
-    videos[11].load("Reflection1.mp4");
-    videos[12].load("Reflection2.mp4");
-    videos[13].load("End1.mp4");
-    videos[14].load("Detected.mp4");
-    
-    cout << "tell all the videos to only play once" << endl;
+    videos[0].load("Attractor.mov");
+    videos[1].load("Welcome1.mov");
+    videos[2].load("Welcome2.mov");
+    videos[3].load("Tour1.mov");
+    videos[4].load("Tour2.mov");
+    videos[5].load("Tour3.mov");
+    videos[6].load("Questions1.mov");
+    videos[7].load("Questions2.mov");
+    videos[8].load("Questions3.mov");
+    videos[9].load("Questions4.mov");
+    videos[10].load("Meeting1.mov");
+    videos[11].load("Reflection1.mov");
+    videos[12].load("Reflection2.mov");
+    videos[13].load("End.mov");
+    videos[14].load("Detected.mov");
     
     // tell all the videos to only play once
     for(int i = 0; i < VIDEOS_LENGTH; i++) {
@@ -60,28 +62,50 @@ void ofApp::update(){
     // check if the video has finished
     // the attractor doesn't trigger this because of it's loopState
     // so it's only when normal videos stop
-    if ( videoPointer->getIsMovieDone() ) {
-        cout << "video finished, nPlaying(" << nPlaying << ")" << endl;
-        
+    if ( videos[videosIndex].getIsMovieDone() ) {
+        cout << "video finished = videosIndex:" << videosIndex << ", sequenceIndex:" << sequenceIndex << endl;
+
         // are there any more videos to play?
-        if ( nPlaying >= SEQUENCE_LENGTH-1 ) {
+        if ( sequenceIndex >= SEQUENCE_LENGTH-1 ) {
             
-            // play the attractor
-            playVideo(0);
+            if (numVisitorsChanged) {
+                
+                // start playing again
             
-            isSequencePlaying = false;
+                // set the flag to false to record the current number of visitors
+                numVisitorsChanged = false;
+                
+                // regenerate a new video sequence
+                generateVideoSequence();
+                
+                // reset the index so the next video will be the first in the sequence
+                sequenceIndex = 0;
+                
+                // play the first video in the sequence
+                playVideo(sequence[sequenceIndex]);
+                
+                isSequencePlaying = true;
+            }
+            else {
+                
+                // play the attractor
+                playVideo(0);
+                
+                isSequencePlaying = false;
+            }
+            
         }
         else {
-            
+
             // increase the nPlaying number to the next video in the array
-            nPlaying++;
-            
-            playVideo( sequence[nPlaying] );
+            sequenceIndex++;
+
+            playVideo( sequence[sequenceIndex] );
         }
-        
+
     }
-    
-    videoPointer->update();
+
+    videos[videosIndex].update();
     
     if (isVisitorAnimating) {
         float timer = ofGetElapsedTimef() - visitorStartTime;
@@ -100,47 +124,15 @@ void ofApp::draw(){
     
     ofBackground(0);
     
-    // convert width and height to floats so we can use decimals
-    float screenWidth = ofGetWidth();
-    float screenHeight = ofGetHeight();
-    float screenRatio = screenWidth / screenHeight;
+    videos[videosIndex].draw( videoSize.x, videoSize.y, videoSize.width, videoSize.height );
+    drawGFX( videoSize.x, videoSize.y, videoSize.width, videoSize.height );
     
-    // check the screen ratio and stretch the width or the height
-    if (screenRatio >= hdVideoRatio) {
-        
-        // wider
-        
-        float newWidth = screenHeight*hdVideoRatio;
-        drawVideo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        drawGFX((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        
-        if (showControls) {
-            drawDebugInfo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        }
-        
-    }
-    else {
-        
-        // taller
-        
-        float newHeight = screenWidth/hdVideoRatio;
-        drawVideo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        drawGFX(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        
-        if (showControls) {
-            drawDebugInfo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        }
-        
+    if (showControls) {
+        drawDebugInfo( videoSize.x, videoSize.y, videoSize.width, videoSize.height );
     }
 
 }
 
-//--------------------------------------------------------------
-void ofApp::drawVideo(int x, int y, int w, int h){
-    
-    videoPointer->draw(x, y, w, h);
-    
-}
 
 //--------------------------------------------------------------
 void ofApp::drawGFX(float x, float y, float w, float h){
@@ -189,10 +181,10 @@ void ofApp::drawGFX(float x, float y, float w, float h){
     if (isVisitorAnimating) {
         // nudge up a little and draw the string
         ofTranslate((person.getWidth()*scale)/2+5, -50);
-        ofDrawBitmapStringHighlight("Citizen #" + visitors.back() + " detected", -110, 0, orange2);
+        ofDrawBitmapStringHighlight("Citizen #" + visitors.back() + " detected", -110, 0, orange);
         
         ofPushStyle();
-        ofSetColor(orange2);
+        ofSetColor(orange);
         ofDrawLine(0, 0, 0, 50);
         ofPopStyle();
     }
@@ -215,11 +207,11 @@ void ofApp::drawDebugInfo(int x, int y, int w, int h){
     
     // output the sequence order and highlight the new video position
     for(int i = 0; i < SEQUENCE_LENGTH; i++) {
-        if (i == nPlaying) {
+        if (i == sequenceIndex) {
             str += "[";
         }
         str += ofToString(sequence[i]);
-        if (i == nPlaying) {
+        if (i == sequenceIndex) {
             str += "]";
         }
         if (i < SEQUENCE_LENGTH-1) {
@@ -244,32 +236,22 @@ void ofApp::generateVideoSequence(){
     sequence[4] = 10; // meeting
     sequence[5] = round( ofRandom(11, 12) ); // reflection
     sequence[6] = 13; // end
-    
-    // reset the playhead so the next video will be the first in the sequence
-    nPlaying = 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::playVideo(int n){
     
     // stop any existing video
-    if (videoPointer) {
-        videoPointer->stop();
-    }
+    videos[videosIndex].stop();
     
-    // switch to the new video using a pointer
-    videoPointer = &videos[n];
+    // point to the new video
+    videosIndex = n;
     
     // set to starting frame
-    videoPointer->setPosition(0);
+    videos[videosIndex].setPosition(0);
     
     // start playing from the beginning
-    videoPointer->play();
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key){
+    videos[videosIndex].play();
     
 }
 
@@ -336,13 +318,23 @@ void ofApp::addVisitor(){
         
         if (!isSequencePlaying) {
             
+            // set the flag to false to record the current number of visitors
+            numVisitorsChanged = false;
+            
             // regenerate a new video sequence
             generateVideoSequence();
             
+            // reset the index so the next video will be the first in the sequence
+            sequenceIndex = 0;
+            
             // play the first video in the sequence
-            playVideo(sequence[nPlaying]);
+            playVideo(sequence[sequenceIndex]);
             
             isSequencePlaying = true;
+        }
+        else {
+            // we're already playing so the num of visitors has changed!
+            numVisitorsChanged = true;
         }
         
     }
@@ -363,6 +355,10 @@ void ofApp::removeVisitor(){
         // check and hide the id if everyone's left
         if ( visitors.size() == 0 ) {
             isVisitorAnimating = false;
+            numVisitorsChanged = false;
+        }
+        else {
+            numVisitorsChanged = true;
         }
         
     }
@@ -377,46 +373,47 @@ char ofApp::getRandomChar(){
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-    
-}
-
-//--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
+    // convert width and height to floats so we can use decimals
+    float screenWidth = w;
+    float screenHeight = h;
+    float screenRatio = screenWidth / screenHeight;
     
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){
-    
+    // check the screen ratio and stretch the width or the height
+    if (screenRatio >= HD_ASPECT_RATIO) {
+        
+        // wider
+        float newWidth = screenHeight * HD_ASPECT_RATIO;
+        videoSize.set((screenWidth-newWidth)/2, 0, screenHeight * HD_ASPECT_RATIO, screenHeight);
+        
+    }
+    else {
+        
+        // taller
+        float newHeight = screenWidth / HD_ASPECT_RATIO;
+        videoSize.set(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
+        
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
     
+}
+
+//--------------------------------------------------------------
+void ofApp::exit() {
+    
+    // stop the current video that's playing
+    videos[videosIndex].stop();
+    
+    // tell all the videos to only play once
+    for(int i = 0; i < VIDEOS_LENGTH; i++) {
+        videos[i].close();
+    }
+    
+    // stop and unload the sound
+    ding.unload();
+    
+    cout << "\nBYE!";
 }

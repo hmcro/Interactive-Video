@@ -2,10 +2,12 @@
 
 #include "ofMain.h"
 #include "ofxSvg.h"
+#include "ofxHapPlayer.h"
 
 #define VIDEOS_LENGTH 15
 #define SEQUENCE_LENGTH 7
 #define MAX_VISITORS 40
+#define HD_ASPECT_RATIO 1.777
 
 class ofApp : public ofBaseApp{
 
@@ -13,40 +15,24 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-
-		void keyPressed(int key);
 		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
 		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+        void exit();
+    
     
         //
-        // VIDEO RENDER STUFF
+        // VIDEO STUFF
         //
     
         // use these functions to start each new video
         // we don't access the array of videos directly
         void playVideo(int n);
-        void drawVideo(int x, int y, int w, int h);
     
-        // fixed ratio that we compare against to resize & scale the video
-        const float hdVideoRatio = 1.777;
+        ofRectangle videoSize;
     
         // array of all the video files
-        ofVideoPlayer videos[VIDEOS_LENGTH];
-    
-        // Pointer to ofVideoPlayer
-        ofVideoPlayer *videoPointer;
-    
-        //
-        // VIDEO SEQUENCE STUFF
-        //
+        ofxHapPlayer videos[VIDEOS_LENGTH];
     
         // use these functions to regenerate a list of videos to play
         void generateVideoSequence();
@@ -56,16 +42,15 @@ class ofApp : public ofBaseApp{
         int sequence[SEQUENCE_LENGTH];
     
         // int to remember which video we're playing
-        int nPlaying;
-    
+        int videosIndex;
+        int sequenceIndex;
         bool isSequencePlaying = false;
     
         //
         // GFX STUFF
         //
     
-        ofColor orange1;
-        ofColor orange2;
+        ofColor orange;
     
         void drawDebugInfo(int x, int y, int w, int h);
         void drawGFX(float x, float y, float w, float h);
@@ -82,7 +67,7 @@ class ofApp : public ofBaseApp{
         ofSoundPlayer  ding;
     
         // flag to show/hide the debug controls and keyboard shortcuts
-        bool showControls = true;
+        bool showControls = false;
     
         //
         // INTERACTIVE STUFF
@@ -98,4 +83,5 @@ class ofApp : public ofBaseApp{
         // timer to show the visitors id
         float visitorStartTime;
         bool isVisitorAnimating = false;
+        bool numVisitorsChanged = false;
 };
