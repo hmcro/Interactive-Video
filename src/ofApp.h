@@ -7,6 +7,7 @@
 #define VIDEOS_LENGTH 15
 #define SEQUENCE_LENGTH 7
 #define MAX_VISITORS 40
+#define HD_ASPECT_RATIO 1.777
 
 class ofApp : public ofBaseApp{
 
@@ -46,15 +47,13 @@ class ofApp : public ofBaseApp{
         // int to remember which video we're playing
         int videosIndex;
         int sequenceIndex;
-    
         bool isSequencePlaying = false;
     
         //
         // GFX STUFF
         //
     
-        ofColor orange1;
-        ofColor orange2;
+        ofColor orange;
     
         void drawDebugInfo(int x, int y, int w, int h);
         void drawGFX(float x, float y, float w, float h);

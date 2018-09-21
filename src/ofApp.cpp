@@ -9,8 +9,7 @@ void ofApp::setup(){
     ofSetDataPathRoot("../Resources/data/");
     
     // set the colour
-    orange1.setHex(0xE9501E);
-    orange2.setHex(0xAF2C00);
+    orange.setHex(0xAF2C00);
     
     // load the GFX
     logo.load("hmcro-logo.svg");
@@ -158,10 +157,10 @@ void ofApp::drawGFX(float x, float y, float w, float h){
     if (isVisitorAnimating) {
         // nudge up a little and draw the string
         ofTranslate((person.getWidth()*scale)/2+5, -50);
-        ofDrawBitmapStringHighlight("Citizen #" + visitors.back() + " detected", -110, 0, orange2);
+        ofDrawBitmapStringHighlight("Citizen #" + visitors.back() + " detected", -110, 0, orange);
         
         ofPushStyle();
-        ofSetColor(orange2);
+        ofSetColor(orange);
         ofDrawLine(0, 0, 0, 50);
         ofPopStyle();
     }
@@ -346,17 +345,17 @@ void ofApp::windowResized(int w, int h){
     float screenRatio = screenWidth / screenHeight;
     
     // check the screen ratio and stretch the width or the height
-    if (screenRatio >= 1.777) {
+    if (screenRatio >= HD_ASPECT_RATIO) {
         
         // wider
-        float newWidth = screenHeight*hdVideoRatio;
-        videoSize.set((screenWidth-newWidth)/2, 0, screenHeight*hdVideoRatio, screenHeight);
+        float newWidth = screenHeight * HD_ASPECT_RATIO;
+        videoSize.set((screenWidth-newWidth)/2, 0, screenHeight * HD_ASPECT_RATIO, screenHeight);
         
     }
     else {
         
         // taller
-        float newHeight = screenWidth/hdVideoRatio;
+        float newHeight = screenWidth / HD_ASPECT_RATIO;
         videoSize.set(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
         
     }
