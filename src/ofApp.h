@@ -30,6 +30,8 @@ class ofApp : public ofBaseApp{
         // fixed ratio that we compare against to resize & scale the video
         const float hdVideoRatio = 1.777;
     
+        ofRectangle videoSize;
+    
         // array of all the video files
         ofxHapPlayer videos[VIDEOS_LENGTH];
     
@@ -45,7 +47,8 @@ class ofApp : public ofBaseApp{
         int sequence[SEQUENCE_LENGTH];
     
         // int to remember which video we're playing
-        int nPlaying;
+        int videosIndex;
+        int sequenceIndex;
     
         bool isSequencePlaying = false;
     

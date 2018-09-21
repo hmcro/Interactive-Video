@@ -18,6 +18,9 @@ void ofApp::setup(){
     
     // load the audio
     ding.load("91926__corsica-s__ding.wav");
+    
+    // calculate the screen dimensions by calling the windowResized function
+    windowResized( ofGetWidth(), ofGetHeight() );
 
     // load all video urls into array
     videos[0].load("Attractor.mov");
@@ -58,11 +61,11 @@ void ofApp::update(){
     // check if the video has finished
     // the attractor doesn't trigger this because of it's loopState
     // so it's only when normal videos stop
-    if ( videos[nPlaying].getIsMovieDone() ) {
-        cout << "video finished, nPlaying(" << nPlaying << ")" << endl;
+    if ( videos[videosIndex].getIsMovieDone() ) {
+        cout << "video finished = videosIndex:" << videosIndex << ", sequenceIndex:" << sequenceIndex << endl;
 
         // are there any more videos to play?
-        if ( nPlaying >= SEQUENCE_LENGTH-1 ) {
+        if ( sequenceIndex >= SEQUENCE_LENGTH-1 ) {
 
             // play the attractor
             playVideo(0);
@@ -72,14 +75,14 @@ void ofApp::update(){
         else {
 
             // increase the nPlaying number to the next video in the array
-            nPlaying++;
+            sequenceIndex++;
 
-            playVideo( sequence[nPlaying] );
+            playVideo( sequence[sequenceIndex] );
         }
 
     }
 
-    videos[nPlaying].update();
+    videos[videosIndex].update();
     
     if (isVisitorAnimating) {
         float timer = ofGetElapsedTimef() - visitorStartTime;
@@ -98,37 +101,11 @@ void ofApp::draw(){
     
     ofBackground(0);
     
-    // convert width and height to floats so we can use decimals
-    float screenWidth = ofGetWidth();
-    float screenHeight = ofGetHeight();
-    float screenRatio = screenWidth / screenHeight;
+    videos[videosIndex].draw( videoSize.x, videoSize.y, videoSize.width, videoSize.height );
+    drawGFX( videoSize.x, videoSize.y, videoSize.width, videoSize.height );
     
-    // check the screen ratio and stretch the width or the height
-    if (screenRatio >= hdVideoRatio) {
-        
-        // wider
-        
-        float newWidth = screenHeight*hdVideoRatio;
-        videos[nPlaying].draw((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        drawGFX((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        
-        if (showControls) {
-            drawDebugInfo((screenWidth-newWidth)/2, 0, newWidth, screenHeight);
-        }
-        
-    }
-    else {
-        
-        // taller
-        
-        float newHeight = screenWidth/hdVideoRatio;
-        videos[nPlaying].draw(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        drawGFX(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        
-        if (showControls) {
-            drawDebugInfo(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
-        }
-        
+    if (showControls) {
+        drawDebugInfo( videoSize.x, videoSize.y, videoSize.width, videoSize.height );
     }
 
 }
@@ -207,11 +184,11 @@ void ofApp::drawDebugInfo(int x, int y, int w, int h){
     
     // output the sequence order and highlight the new video position
     for(int i = 0; i < SEQUENCE_LENGTH; i++) {
-        if (i == nPlaying) {
+        if (i == sequenceIndex) {
             str += "[";
         }
         str += ofToString(sequence[i]);
-        if (i == nPlaying) {
+        if (i == sequenceIndex) {
             str += "]";
         }
         if (i < SEQUENCE_LENGTH-1) {
@@ -236,22 +213,22 @@ void ofApp::generateVideoSequence(){
     sequence[4] = 10; // meeting
     sequence[5] = round( ofRandom(11, 12) ); // reflection
     sequence[6] = 13; // end
-    
-    // reset the playhead so the next video will be the first in the sequence
-    nPlaying = 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::playVideo(int n){
     
     // stop any existing video
-    videos[nPlaying].stop();
+    videos[videosIndex].stop();
+    
+    // point to the new video
+    videosIndex = n;
     
     // set to starting frame
-    videos[nPlaying].setPosition(0);
+    videos[videosIndex].setPosition(0);
     
     // start playing from the beginning
-    videos[nPlaying].play();
+    videos[videosIndex].play();
     
 }
 
@@ -321,8 +298,11 @@ void ofApp::addVisitor(){
             // regenerate a new video sequence
             generateVideoSequence();
             
+            // reset the index so the next video will be the first in the sequence
+            sequenceIndex = 0;
+            
             // play the first video in the sequence
-            playVideo(sequence[nPlaying]);
+            playVideo(sequence[sequenceIndex]);
             
             isSequencePlaying = true;
         }
@@ -356,11 +336,30 @@ void ofApp::removeVisitor(){
 char ofApp::getRandomChar(){
     
     return rand() % 26 + 'A';
-} 
+}
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
+    // convert width and height to floats so we can use decimals
+    float screenWidth = w;
+    float screenHeight = h;
+    float screenRatio = screenWidth / screenHeight;
     
+    // check the screen ratio and stretch the width or the height
+    if (screenRatio >= hdVideoRatio) {
+        
+        // wider
+        float newWidth = screenHeight*hdVideoRatio;
+        videoSize.set((screenWidth-newWidth)/2, 0, screenHeight*hdVideoRatio, screenHeight);
+        
+    }
+    else {
+        
+        // taller
+        float newHeight = screenWidth/hdVideoRatio;
+        videoSize.set(0, (screenHeight-newHeight)/2, screenWidth, newHeight);
+        
+    }
 }
 
 //--------------------------------------------------------------
