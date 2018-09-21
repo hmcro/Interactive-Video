@@ -17,6 +17,6 @@ Then you should use the follow code inside the openFrameworks project to overrid
 ```
 ofSetDataPathRoot("../Resources/data/");
 ```
-You will also need to install [Hap QuickTime Codec version 12](https://github.com/vidvox/hap-qt-codec/releases/) because this usings the [HAP codec](http://hap.video/) to play videos directly on GPU and make massive performance gains.
+You will also need to install [Hap QuickTime Codec version 12](https://github.com/vidvox/hap-qt-codec/releases/) on any machine you want to run the app, because this uses the [HAP codec](http://hap.video/) to play videos directly on GPU and make massive performance gains.
 
 You will also need to compile to 32-bit as HAP uses Quicktime which doesn't run 64-bit.
