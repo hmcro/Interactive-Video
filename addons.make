@@ -1,2 +1,2 @@
-ofxHapPlayer
+local_addons/ofxHapPlayer
 ofxSvg
