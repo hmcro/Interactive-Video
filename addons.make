@@ -1,2 +1,3 @@
 ofxHapPlayer
+ofxOsc
 ofxSvg
