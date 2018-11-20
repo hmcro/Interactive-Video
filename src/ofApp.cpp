@@ -24,23 +24,23 @@ void ofApp::setup(){
     
     // calculate the screen dimensions by calling the windowResized function
     windowResized( ofGetWidth(), ofGetHeight() );
-
+    
     // load all video urls into array
-    videos[0].load("Attractor.mov");
-    videos[1].load("Welcome1.mov");
-    videos[2].load("Welcome2.mov");
-    videos[3].load("Tour1.mov");
-    videos[4].load("Tour2.mov");
-    videos[5].load("Tour3.mov");
-    videos[6].load("Questions1.mov");
-    videos[7].load("Questions2.mov");
-    videos[8].load("Questions3.mov");
-    videos[9].load("Questions4.mov");
-    videos[10].load("Meeting1.mov");
-    videos[11].load("Reflection1.mov");
-    videos[12].load("Reflection2.mov");
-    videos[13].load("End.mov");
-    videos[14].load("Detected.mov");
+        videos[0].load("Attractor.mov");
+        videos[1].load("Welcome1.mov");
+        videos[2].load("Welcome2.mov");
+        videos[3].load("Tour1.mov");
+        videos[4].load("Tour2.mov");
+        videos[5].load("Tour3.mov");
+        videos[6].load("Questions1.mov");
+        videos[7].load("Questions2.mov");
+        videos[8].load("Questions3.mov");
+        videos[9].load("Questions4.mov");
+        videos[10].load("Meeting1.mov");
+        videos[11].load("Reflection1.mov");
+        videos[12].load("Reflection2.mov");
+        videos[13].load("End.mov");
+        videos[14].load("Detected.mov");
     
     // tell all the videos to only play once
     for(int i = 0; i < VIDEOS_LENGTH; i++) {
@@ -53,6 +53,12 @@ void ofApp::setup(){
     // start playing the attractor video immediately
     playVideo(0);
     
+    // Setup comms
+    cout << "listening for osc messages on port " << PORT << "\n";
+    receiver.setup(PORT);
+    
+    // Hide the cursor
+    ofHideCursor();
 }
 
 //--------------------------------------------------------------
@@ -66,14 +72,14 @@ void ofApp::update(){
     // so it's only when normal videos stop
     if ( videos[videosIndex].getIsMovieDone() ) {
         cout << "video finished = videosIndex:" << videosIndex << ", sequenceIndex:" << sequenceIndex << endl;
-
+        
         // are there any more videos to play?
         if ( sequenceIndex >= SEQUENCE_LENGTH-1 ) {
             
             if (numVisitorsChanged) {
                 
                 // start playing again
-            
+                
                 // set the flag to false to record the current number of visitors
                 numVisitorsChanged = false;
                 
@@ -98,15 +104,15 @@ void ofApp::update(){
             
         }
         else {
-
+            
             // increase the nPlaying number to the next video in the array
             sequenceIndex++;
-
+            
             playVideo( sequence[sequenceIndex] );
         }
-
+        
     }
-
+    
     videos[videosIndex].update();
     
     if (isVisitorAnimating) {
@@ -118,7 +124,9 @@ void ofApp::update(){
             isVisitorAnimating = false;
         }
     }
-
+    
+    receiveOSC();
+    
 }
 
 //--------------------------------------------------------------
@@ -397,6 +405,21 @@ void ofApp::windowResized(int w, int h){
         
     }
 }
+
+//--------------------------------------------------------------
+void ofApp::receiveOSC(){
+    
+    if(receiver.hasWaitingMessages()) {
+        ofxOscMessage m;
+        receiver.getNextMessage(m);
+        int num = m.getArgAsInt(0);
+        if (num < people) removeVisitor();
+        if (num > people) addVisitor();
+        people = num;
+        cout << "people = " << people << "\n";
+    }
+}
+
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
