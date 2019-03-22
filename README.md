@@ -1,3 +1,6 @@
+# Interactive-Video-V2
+Current running version at DM
+
 # Interactive Video Player
 This project uses a kinect and custom video generator to play randomised video sequences each time a person is detected in front of the display.
 
