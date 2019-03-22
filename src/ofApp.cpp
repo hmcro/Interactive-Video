@@ -8,7 +8,9 @@ void ofApp::setup(){
     // there is a run script that copies the contents of the /bin/data/ folder
     // into the /Resources/data/ folder every time we run the project
     // so we must tell oF to load from the correct folder
+    
     ofSetDataPathRoot("../Resources/data/");
+    
     
     ofSetWindowTitle("Citizen Rotation Office");
     
@@ -22,25 +24,30 @@ void ofApp::setup(){
     // load the audio
     ding.load("91926__corsica-s__ding.wav");
     
+    // V2 Volume of ding sound to be halved to better match video volume
+    // set ding volume
+    ding.setVolume(0.5);
+
+    
     // calculate the screen dimensions by calling the windowResized function
     windowResized( ofGetWidth(), ofGetHeight() );
     
     // load all video urls into array
-        videos[0].load("Attractor.mov");
-        videos[1].load("Welcome1.mov");
-        videos[2].load("Welcome2.mov");
-        videos[3].load("Tour1.mov");
-        videos[4].load("Tour2.mov");
-        videos[5].load("Tour3.mov");
-        videos[6].load("Questions1.mov");
-        videos[7].load("Questions2.mov");
-        videos[8].load("Questions3.mov");
-        videos[9].load("Questions4.mov");
-        videos[10].load("Meeting1.mov");
-        videos[11].load("Reflection1.mov");
-        videos[12].load("Reflection2.mov");
-        videos[13].load("End.mov");
-        videos[14].load("Detected.mov");
+    videos[0].load("Attractor.mov");
+    videos[1].load("Welcome1.mov");
+    videos[2].load("Welcome2.mov");
+    videos[3].load("Tour1.mov");
+    videos[4].load("Tour2.mov");
+    videos[5].load("Tour3.mov");
+    videos[6].load("Questions1.mov");
+    videos[7].load("Questions2.mov");
+    videos[8].load("Questions3.mov");
+    videos[9].load("Questions4.mov");
+    videos[10].load("Meeting1.mov");
+    videos[11].load("Reflection1.mov");
+    videos[12].load("Reflection2.mov");
+    videos[13].load("End.mov");
+    videos[14].load("Detected.mov");
     
     // tell all the videos to only play once
     for(int i = 0; i < VIDEOS_LENGTH; i++) {
@@ -140,7 +147,7 @@ void ofApp::draw(){
     if (showControls) {
         drawDebugInfo( videoSize.x, videoSize.y, videoSize.width, videoSize.height );
     }
-
+    
 }
 
 
@@ -359,8 +366,8 @@ void ofApp::removeVisitor(){
         // erase the last element in the vector
         visitors.pop_back();
         
-        // play the audio sound
-        ding.play();
+        // V2 ding.play() is disabled on visitor leaving the space
+        // ding.play();
         
         // check and hide the id if everyone's left
         if ( visitors.size() == 0 ) {
