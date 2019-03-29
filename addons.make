@@ -1,3 +1,3 @@
-ofxHapPlayer
+ofxHapInAVFoundationPlayer
 ofxOsc
 ofxSvg
