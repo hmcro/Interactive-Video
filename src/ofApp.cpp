@@ -10,7 +10,7 @@ void ofApp::setup(){
     // into the /Resources/data/ folder every time we run the project
     // so we must tell oF to load from the correct folder
     
-//    ofSetDataPathRoot("../Resources/data/");
+    ofSetDataPathRoot("../Resources/data/");
     
     
     ofSetWindowTitle("Citizen Rotation Office");
