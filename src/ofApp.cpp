@@ -3,8 +3,9 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
-    // PETE'S TEST BRANCH
-    
+    // VERSION 3
+    // Updated to use HAP-AV-Foundation library, by Henry Betts, and compile in 64-bit on Xcode 10
+    //
     // there is a run script that copies the contents of the /bin/data/ folder
     // into the /Resources/data/ folder every time we run the project
     // so we must tell oF to load from the correct folder
@@ -27,27 +28,27 @@ void ofApp::setup(){
     // V2 Volume of ding sound to be halved to better match video volume
     // set ding volume
     ding.setVolume(0.5);
-
+    
     
     // calculate the screen dimensions by calling the windowResized function
     windowResized( ofGetWidth(), ofGetHeight() );
     
     // load all video urls into array
-    videos[0].load("Attractor.mov");
-    videos[1].load("Welcome1.mov");
-    videos[2].load("Welcome2.mov");
-    videos[3].load("Tour1.mov");
-    videos[4].load("Tour2.mov");
-    videos[5].load("Tour3.mov");
-    videos[6].load("Questions1.mov");
-    videos[7].load("Questions2.mov");
-    videos[8].load("Questions3.mov");
-    videos[9].load("Questions4.mov");
-    videos[10].load("Meeting1.mov");
-    videos[11].load("Reflection1.mov");
-    videos[12].load("Reflection2.mov");
-    videos[13].load("End.mov");
-    videos[14].load("Detected.mov");
+    videos[0].load("Attractor_HAP.mov");
+    videos[1].load("Welcome1_HAP.mov");
+    videos[2].load("Welcome2_HAP.mov");
+    videos[3].load("Tour1_HAP.mov");
+    videos[4].load("Tour2_HAP.mov");
+    videos[5].load("Tour3_HAP.mov");
+    videos[6].load("Questions1_HAP.mov");
+    videos[7].load("Questions2_HAP.mov");
+    videos[8].load("Questions3_HAP.mov");
+    videos[9].load("Questions4_HAP.mov");
+    videos[10].load("Meeting1_HAP.mov");
+    videos[11].load("Reflection1_HAP.mov");
+    videos[12].load("Reflection2_HAP.mov");
+    videos[13].load("End_HAP.mov");
+    videos[14].load("Detected_HAP.mov");
     
     // tell all the videos to only play once
     for(int i = 0; i < VIDEOS_LENGTH; i++) {
@@ -55,7 +56,7 @@ void ofApp::setup(){
     }
     
     // BUT tell the attractor to play on looping
-    videos[0].setLoopState(OF_LOOP_NORMAL);
+    //    videos[0].setLoopState(OF_LOOP_NORMAL);
     
     // start playing the attractor video immediately
     playVideo(0);
@@ -75,49 +76,45 @@ void ofApp::update(){
     ofSoundUpdate();
     
     // check if the video has finished
-    // the attractor doesn't trigger this because of it's loopState
-    // so it's only when normal videos stop
     if ( videos[videosIndex].getIsMovieDone() ) {
         cout << "video finished = videosIndex:" << videosIndex << ", sequenceIndex:" << sequenceIndex << endl;
-        
-        // are there any more videos to play?
-        if ( sequenceIndex >= SEQUENCE_LENGTH-1 ) {
-            
-            if (numVisitorsChanged) {
-                
-                // start playing again
-                
-                // set the flag to false to record the current number of visitors
-                numVisitorsChanged = false;
-                
-                // regenerate a new video sequence
-                generateVideoSequence();
-                
-                // reset the index so the next video will be the first in the sequence
-                sequenceIndex = 0;
-                
-                // play the first video in the sequence
-                playVideo(sequence[sequenceIndex]);
-                
-                isSequencePlaying = true;
+        if (isSequencePlaying) {
+            // a video in the sequence has finished
+            // are there any more videos to play?
+            if ( sequenceIndex >= SEQUENCE_LENGTH-1 ) { // if sequence is finished
+                if (numVisitorsChanged) {
+                    // start playing again
+                    // set the flag to false to record the current number of visitors
+                    numVisitorsChanged = false;
+                    // regenerate a new video sequence
+                    generateVideoSequence();
+                    // reset the index so the next video will be the first in the sequence
+                    sequenceIndex = 0;
+                    // play the first video in the sequence
+                    playVideo(sequence[sequenceIndex]);
+                    isSequenceAutomatic = false;
+                    isSequencePlaying = true;
+                } else {
+                    // play the attractor
+                    playVideo(0);
+                    isSequencePlaying = false;
+                }
+            } else {
+                // increase the nPlaying number to the next video in the array
+                sequenceIndex++;
+                playVideo( sequence[sequenceIndex] );
             }
-            else {
-                
-                // play the attractor
-                playVideo(0);
-                
-                isSequencePlaying = false;
-            }
-            
+        } else {
+            // the attractor has finished
+            // regenerate a new video sequence
+            generateVideoSequence();
+            // reset the index so the next video will be the first in the sequence
+            sequenceIndex = 0;
+            // play the first video in the sequence
+            playVideo(sequence[sequenceIndex]);
+            isSequenceAutomatic = true;
+            isSequencePlaying = true;
         }
-        else {
-            
-            // increase the nPlaying number to the next video in the array
-            sequenceIndex++;
-            
-            playVideo( sequence[sequenceIndex] );
-        }
-        
     }
     
     videos[videosIndex].update();
@@ -178,34 +175,43 @@ void ofApp::drawGFX(float x, float y, float w, float h){
     ofPushMatrix();
     ofTranslate(w-(w*gfxPaddingX), y+h-(logo.getHeight()*scale)-((person.getHeight()*scale)/2));
     
-    // create an iterator that points to the first element
-    vector<string>::iterator it = visitors.begin();
-    
-    // loop through, increasing to next element until the end is reached
-    for(; it != visitors.end(); ++it){
-        // draw the people icons
-        ofTranslate(-(person.getWidth()*scale), 0);
-        
-        // scale the icon to the right size
-        ofPushMatrix();
-        ofScale(scale, scale);
-        person.draw();
-        ofPopMatrix();
-        
-        ofTranslate(-5, 0);
-    }
-    
-    if (isVisitorAnimating) {
-        // nudge up a little and draw the string
-        ofTranslate((person.getWidth()*scale)/2+5, -50);
-        ofDrawBitmapStringHighlight("Citizen #" + visitors.back() + " detected", -110, 0, orange);
-        
+    if (isSequenceAutomatic) {
+        // just draw a circle
         ofPushStyle();
-        ofSetColor(orange);
-        ofDrawLine(0, 0, 0, 50);
+        ofSetColor(255,255,255);
+        ofDrawCircle(0, 0, 10);
         ofPopStyle();
+        
+    } else {
+        // draw the people
+        // create an iterator that points to the first element
+        vector<string>::iterator it = visitors.begin();
+        
+        // loop through, increasing to next element until the end is reached
+        for(; it != visitors.end(); ++it){
+            // draw the people icons
+            ofTranslate(-(person.getWidth()*scale), 0);
+            
+            // scale the icon to the right size
+            ofPushMatrix();
+            ofScale(scale, scale);
+            person.draw();
+            ofPopMatrix();
+            
+            ofTranslate(-5, 0);
+        }
+        
+        if (isVisitorAnimating) {
+            // nudge up a little and draw the string
+            ofTranslate((person.getWidth()*scale)/2+5, -50);
+            ofDrawBitmapStringHighlight("Citizen #" + visitors.back() + " detected", -110, 0, orange);
+            
+            ofPushStyle();
+            ofSetColor(orange);
+            ofDrawLine(0, 0, 0, 50);
+            ofPopStyle();
+        }
     }
-    
     
     ofPopMatrix();
     
@@ -216,6 +222,11 @@ void ofApp::drawDebugInfo(int x, int y, int w, int h){
     
     string str = "VIDEO SEQUENCER";
     str += "\n\nA = attractor video";
+    str += "\n\nS = skip to near end of attractor video";
+    str += "\nattractor duration = " + ofToString(videos[0].getTotalNumFrames());
+    str += "\nattractor position = " + ofToString(videos[0].getCurrentFrame());
+    str += "\nnumVisitorsChanged = " + ofToString(numVisitorsChanged);
+    str += "\nisSequenceAutomatic: " + ofToString(isSequenceAutomatic);
     str += "\nF = fullscreen";
     str += "\n+ = Add 1 visitor";
     str += "\n- = Remove 1 visitor";
@@ -281,6 +292,15 @@ void ofApp::keyReleased(int key){
         playVideo(0);
         
     }
+    
+    else if (key == 's') {
+        
+        isSequencePlaying = false;
+        playVideo(0);
+        videos[0].setFrame(6200);
+        
+    }
+    
     else if (key == 'f') {
         
         ofToggleFullscreen();
@@ -347,6 +367,7 @@ void ofApp::addVisitor(){
             // play the first video in the sequence
             playVideo(sequence[sequenceIndex]);
             
+            isSequenceAutomatic = false;
             isSequencePlaying = true;
         }
         else {
@@ -449,3 +470,5 @@ void ofApp::exit() {
     
     cout << "\nBYE!";
 }
+
+

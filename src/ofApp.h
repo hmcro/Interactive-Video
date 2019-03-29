@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxSvg.h"
-#include "ofxHapPlayer.h"
+#include "ofxHapInAVFoundationPlayer.h"
 #include "ofxOsc.h"
 
 // listen on port 12345
@@ -36,7 +36,7 @@ public:
     ofRectangle videoSize;
     
     // array of all the video files
-    ofxHapPlayer videos[VIDEOS_LENGTH];
+    ofxHapInAVFoundationPlayer videos[VIDEOS_LENGTH];
     
     // use these functions to regenerate a list of videos to play
     void generateVideoSequence();
@@ -49,6 +49,9 @@ public:
     int videosIndex;
     int sequenceIndex;
     bool isSequencePlaying = false;
+    bool isSequenceAutomatic = false;
+    
+    
     
     //
     // GFX STUFF
