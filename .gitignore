@@ -19,6 +19,9 @@ Release*/
 #XCode 4
 xcuserdata
 *.xcworkspace
+openFrameworks-Info.plist
+*.xcodeproj
+*.xcconfig
  
 #Code::Blocks
 *.depend
